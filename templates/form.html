@@ -499,170 +499,147 @@
 </div>
 
 <script>
-    (function() {
-        // Signature pad initialization with proper canvas size handling
-        const canvas = document.getElementById('signature-pad');
-        
-        function resizeCanvasAndInit() {
-            if (!canvas) return;
-            const ratio = Math.max(window.devicePixelRatio || 1, 1);
-            const rect = canvas.getBoundingClientRect();
-            if (rect.width === 0) return;
-            canvas.width = rect.width * ratio;
-            canvas.height = rect.height * ratio;
-            canvas.style.width = `${rect.width}px`;
-            canvas.style.height = `${rect.height}px`;
-            const ctx = canvas.getContext('2d');
-            ctx.scale(ratio, ratio);
-            
-            let existingData = null;
-            if (window.sigPadInstance && !window.sigPadInstance.isEmpty()) {
-                existingData = window.sigPadInstance.toData();
-            }
-            
-            window.sigPadInstance = new SignaturePad(canvas, {
-                backgroundColor: 'rgb(255, 255, 255)',
-                penColor: '#1e4663',
-                minWidth: 1.2,
-                maxWidth: 2.5,
-                throttle: 16,
-            });
-            
-            if (existingData && existingData.length > 0) {
-                window.sigPadInstance.fromData(existingData);
-            } else {
-                window.sigPadInstance.clear();
-            }
-        }
-        
-        let resizeTimer;
-        window.addEventListener('resize', function() {
-            if (resizeTimer) clearTimeout(resizeTimer);
-            resizeTimer = setTimeout(() => {
-                if (window.sigPadInstance) {
-                    const wasEmpty = window.sigPadInstance.isEmpty();
-                    const oldSignatureData = wasEmpty ? null : window.sigPadInstance.toData();
-                    resizeCanvasAndInit();
-                    if (oldSignatureData && !wasEmpty && window.sigPadInstance) {
-                        window.sigPadInstance.fromData(oldSignatureData);
-                    }
-                } else {
-                    resizeCanvasAndInit();
-                }
-            }, 150);
-        });
-        
-        window.addEventListener('DOMContentLoaded', () => {
-            resizeCanvasAndInit();
-            const clearBtn = document.getElementById('clear-btn');
-            if (clearBtn) {
-                clearBtn.addEventListener('click', () => {
-                    if (window.sigPadInstance) {
-                        window.sigPadInstance.clear();
-                        document.getElementById('signature').value = '';
-                    }
-                });
-            }
-        });
-    })();
 
-    // Global capture signature and full validation
-    function captureSignature(event) {
-        const sigPad = window.sigPadInstance;
-        if (!sigPad) {
-            alert("Signature pad not ready, please refresh.");
-            event.preventDefault();
-            return false;
-        }
-        
-        // Check if signature is drawn
-        if (sigPad.isEmpty()) {
-            event.preventDefault();
-            alert("✍️ Parent signature is required! Please draw your signature in the canvas area.");
-            return false;
-        }
-        
-        // Save signature as base64
-        const signatureDataURL = sigPad.toDataURL("image/png");
-        const signatureInput = document.getElementById("signature");
-        if (signatureInput) signatureInput.value = signatureDataURL;
-        
-        // Validate relationship radio group (required)
-        const relationshipRadios = document.querySelectorAll('input[name="relationship"]');
-        let relationshipSelected = false;
-        relationshipRadios.forEach(radio => { if (radio.checked) relationshipSelected = true; });
-        if (!relationshipSelected) {
-            event.preventDefault();
-            alert("Please select Relationship with Student (Mother / Father / Guardian).");
-            return false;
-        }
-        
-        // Validate marital status
-        const maritalRadios = document.querySelectorAll('input[name="marital_status"]');
-        let maritalSelected = false;
-        maritalRadios.forEach(radio => { if (radio.checked) maritalSelected = true; });
-        if (!maritalSelected) {
-            event.preventDefault();
-            alert("Please select Current Marital Status.");
-            return false;
-        }
-        
-        // Check required text/email fields
-        const requiredFields = ['student_name', 'student_id', 'kcse_index', 'phone', 'email', 'university', 'admission', 'parent_name', 'parent_id', 'parent_phone'];
-        let missingFields = [];
-        for (let field of requiredFields) {
-            const inputElem = document.querySelector(`[name="${field}"]`);
-            if (inputElem && inputElem.value.trim() === "") {
-                missingFields.push(field.replace(/_/g, ' '));
-            }
-        }
-        if (missingFields.length > 0) {
-            event.preventDefault();
-            alert(`❌ Please complete all required fields:\n${missingFields.join(', ')}`);
-            return false;
-        }
-        
-        // Email format validation
-        const emailField = document.querySelector('[name="email"]');
-        const emailVal = emailField.value.trim();
-        if (!emailVal.includes('@') || !emailVal.includes('.') || emailVal.length < 5) {
-            event.preventDefault();
-            alert("Please provide a valid email address (e.g., name@domain.com).");
-            return false;
-        }
-        
-        // Phone basic validation (kenyan or general digit check)
-        const phoneField = document.querySelector('[name="phone"]');
-        const phoneVal = phoneField.value.trim();
-        if (!/^[\d+\-\s\(\)]{7,15}$/.test(phoneVal) && !phoneVal.match(/^\d{9,13}$/)) {
-            event.preventDefault();
-            alert("Please enter a valid phone number (digits only, min 9 digits).");
-            return false;
-        }
-        
-        const parentPhone = document.querySelector('[name="parent_phone"]').value.trim();
-        if (!/^[\d+\-\s\(\)]{7,15}$/.test(parentPhone) && !parentPhone.match(/^\d{9,13}$/)) {
-            event.preventDefault();
-            alert("Please enter a valid parent phone number.");
-            return false;
-        }
-        
-        return true;
-    }
-    
-    // Additional DOM ready: ensure hidden signature is cleared if pad cleared manually
-    document.addEventListener('DOMContentLoaded', () => {
-        const clearButton = document.getElementById('clear-btn');
-        if (clearButton) {
-            clearButton.addEventListener('click', function() {
-                setTimeout(() => {
-                    if (window.sigPadInstance && window.sigPadInstance.isEmpty()) {
-                        document.getElementById('signature').value = '';
-                    }
-                }, 5);
-            });
-        }
+let signaturePad;
+const canvas = document.getElementById("signature-pad");
+
+
+function resizeCanvas() {
+
+    const ratio = Math.max(window.devicePixelRatio || 1, 1);
+
+    const oldData = signaturePad && !signaturePad.isEmpty()
+        ? signaturePad.toData()
+        : null;
+
+
+    const width = canvas.offsetWidth;
+    const height = 200;
+
+
+    canvas.width = width * ratio;
+    canvas.height = height * ratio;
+
+    canvas.style.height = height + "px";
+
+
+    const ctx = canvas.getContext("2d");
+
+    ctx.scale(ratio, ratio);
+
+
+    signaturePad = new SignaturePad(canvas, {
+
+        backgroundColor: "rgb(255,255,255)",
+
+        penColor: "#1e4663",
+
+        minWidth: 1,
+
+        maxWidth: 2.5
+
     });
+
+
+    if(oldData){
+        signaturePad.fromData(oldData);
+    }
+
+}
+
+
+
+window.addEventListener("load", function(){
+
+    resizeCanvas();
+
+
+});
+
+
+
+window.addEventListener("resize", function(){
+
+    setTimeout(() => {
+
+        resizeCanvas();
+
+    },200);
+
+});
+
+
+
+
+
+// Clear signature button
+
+document.getElementById("clear-btn")
+.addEventListener("click", function(){
+
+    if(signaturePad){
+
+        signaturePad.clear();
+
+    }
+
+    document.getElementById("signature").value="";
+
+});
+
+
+
+
+
+// Capture signature before submitting
+
+function captureSignature(event){
+
+
+    if(!signaturePad){
+
+        alert("Signature pad failed to load.");
+
+        event.preventDefault();
+
+        return false;
+
+    }
+
+
+
+    if(signaturePad.isEmpty()){
+
+        alert("Please provide the parent's signature.");
+
+        event.preventDefault();
+
+        return false;
+
+    }
+
+
+
+
+    // Get PNG Base64 image
+
+    const signatureImage = signaturePad.toDataURL(
+        "image/png"
+    );
+
+
+
+    document.getElementById("signature").value =
+        signatureImage;
+
+
+
+    return true;
+
+}
+
+
+
 </script>
 </body>
 </html>
