@@ -291,25 +291,35 @@ def generate_pdf(data):
     # Parent signature
     can.setFont("Handwriting", 20)
     can.drawString(60, 300, data["parent_name"])
+
     if data.get("signature"):
-    try:
-        signature_bytes = base64.b64decode(
-            data["signature"]
-        )
+        try:
+            signature_data = data["signature"]
 
-        signature_img = ImageReader(BytesIO(signature_bytes))
+            # Remove Base64 header if it exists
+            if "," in signature_data:
+                signature_data = signature_data.split(",")[1]
 
-        can.drawImage(
-            signature_img,
-            250,
-            300,
-            width=150,
-            height=60,
-            mask='auto'
-        )
+            # Decode image
+            signature_bytes = base64.b64decode(signature_data)
 
-    except Exception as e:
-        print("Signature error:", e)
+            # Create image object
+            signature_img = ImageReader(BytesIO(signature_bytes))
+
+            # Draw signature image
+            can.drawImage(
+                signature_img,
+                250,
+                300,
+                width=150,
+                height=60,
+                mask="auto",
+                preserveAspectRatio=True
+            )
+
+        except Exception as e:
+            print("Signature error:", e)
+
     # Date
     today = datetime.datetime.now().strftime("%d/%m/%Y")
     can.setFont("Handwriting", 14)
@@ -317,7 +327,6 @@ def generate_pdf(data):
 
     can.save()
     packet.seek(0)
-
     # Merge with blank form
     template_path = "static/blank_form.pdf"
     template_pdf = PdfReader(open(template_path, "rb"))
