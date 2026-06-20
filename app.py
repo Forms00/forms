@@ -17,10 +17,12 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = "yoursecret"  # needed for session
+app.secret_key = os.getenv("SECRET_KEY")
 
 # MongoDB connection
-client = MongoClient("mongodb://localhost:27017/")
+mongo_uri = os.getenv("MONGO_URI")
+
+client = MongoClient(mongo_uri)
 db = client["documents_db"]
 collection = db["submissions"]
 
