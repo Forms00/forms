@@ -2,3 +2,5 @@ Flask
 pymongo
 reportlab
 PyPDF2
+requests
+dotenv
