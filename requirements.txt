@@ -3,4 +3,4 @@ pymongo
 reportlab
 PyPDF2
 requests
-dotenv
+python-dotenv
