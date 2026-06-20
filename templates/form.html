@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Student Guardian Registration | Fill & Sign</title>
+    <!-- Signature Pad Library -->
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
+    <!-- Google Fonts + Font Awesome for modern icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(145deg, #eef2f9 0%, #e0e8f2 100%);
+            font-family: 'Inter', sans-serif;
+            padding: 1.5rem;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* main card container */
+        .form-container {
+            max-width: 820px;
+            width: 100%;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 2rem;
+            box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.25), 0 1px 3px rgba(0,0,0,0.03);
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        /* header styling */
+        .form-header {
+            background: linear-gradient(135deg, #0f2b4d 0%, #1a3f6e 100%);
+            padding: 1.5rem 2rem;
+            color: white;
+            text-align: center;
+        }
+
+        .form-header h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            margin-bottom: 0.3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .form-header h2 i {
+            font-size: 1.8rem;
+            color: #ffdb7e;
+        }
+
+        .form-header p {
+            font-size: 0.9rem;
+            opacity: 0.85;
+            font-weight: 400;
+        }
+
+        /* DUAL "ALREADY PAID" BUTTONS - both top and bottom, highly visible */
+        .already-paid-top {
+            background: #fefce8;
+            border-bottom: 1px solid #e6e9d7;
+            padding: 1rem 2rem;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .already-paid-bottom {
+            background: #fefcf5;
+            border-top: 2px solid #e9edf2;
+            padding: 1.2rem 2rem 1.5rem 2rem;
+            text-align: center;
+        }
+
+        .btn-download {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            background: #2ecc71;
+            color: white;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1rem;
+            padding: 0.85rem 1.8rem;
+            border-radius: 3rem;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 10px rgba(46, 204, 113, 0.25);
+            border: none;
+            width: 100%;
+            max-width: 320px;
+            letter-spacing: -0.2px;
+        }
+
+        .btn-download i {
+            font-size: 1.2rem;
+            color: white;
+        }
+
+        .btn-download:hover {
+            background: #27ae60;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 18px rgba(39, 174, 96, 0.3);
+        }
+
+        /* main form area */
+        form {
+            padding: 1.8rem 2rem 1.5rem 2rem;
+        }
+
+        /* field groups */
+        .input-group {
+            margin-bottom: 1.2rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group label {
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-bottom: 0.4rem;
+            color: #1e2f41;
+            letter-spacing: -0.2px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .input-group label i {
+            color: #2c7da0;
+            width: 1.2rem;
+            font-size: 0.9rem;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"] {
+            width: 100%;
+            padding: 0.85rem 1rem;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 1rem;
+            font-size: 0.95rem;
+            font-family: 'Inter', monospace;
+            transition: all 0.2s;
+            background-color: #fefefe;
+            outline: none;
+            color: #0a2540;
+        }
+
+        input:focus {
+            border-color: #2c7da0;
+            box-shadow: 0 0 0 3px rgba(44,125,160,0.2);
+        }
+
+        /* radio group styling */
+        .radio-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            align-items: center;
+            margin-top: 0.3rem;
+            background: #fafcff;
+            padding: 0.7rem 1rem;
+            border-radius: 1rem;
+            border: 1px solid #ecf3fa;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #1e2f41;
+        }
+
+        .radio-option input {
+            accent-color: #1e3c72;
+            width: 1rem;
+            height: 1rem;
+            margin: 0;
+        }
+
+        /* signature section */
+        .signature-section {
+            margin: 1.2rem 0 1rem 0;
+            background: #fbfdff;
+            border-radius: 1.2rem;
+            padding: 0.8rem;
+            border: 1px solid #eef2f8;
+        }
+
+        .signature-label {
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #1e3c72;
+        }
+
+        .signature-label i {
+            font-size: 1.2rem;
+        }
+
+        #signature-pad {
+            border: 2px dashed #cbdde9;
+            width: 100%;
+            height: 200px;
+            border-radius: 1rem;
+            background: #ffffff;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.02);
+            cursor: crosshair;
+            touch-action: none;
+        }
+
+        .signature-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 12px;
+            gap: 12px;
+        }
+
+        .clear-btn {
+            background: #f1f3f7;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 2rem;
+            font-weight: 500;
+            font-size: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #b91c1c;
+            cursor: pointer;
+            transition: 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .clear-btn i {
+            font-size: 0.9rem;
+        }
+
+        .clear-btn:hover {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* primary action button */
+        .action-buttons {
+            margin-top: 1.5rem;
+        }
+
+        .btn-submit {
+            background: linear-gradient(100deg, #1e3c72, #2a4e7a);
+            border: none;
+            color: white;
+            padding: 0.95rem;
+            border-radius: 2rem;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            transition: all 0.25s;
+            box-shadow: 0 5px 12px rgba(30,60,114,0.25);
+            width: 100%;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-submit:hover {
+            background: linear-gradient(100deg, #102b48, #1e3c72);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 18px rgba(0, 0, 0, 0.15);
+        }
+
+        .required-star {
+            color: #e53e3e;
+            margin-left: 3px;
+            font-size: 0.8rem;
+        }
+
+        /* two column layout */
+        .double-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 620px) {
+            body {
+                padding: 0.8rem;
+            }
+            form {
+                padding: 1.2rem;
+            }
+            .form-header h2 {
+                font-size: 1.3rem;
+            }
+            .double-col {
+                grid-template-columns: 1fr;
+                gap: 0.6rem;
+            }
+            .radio-group {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.7rem;
+            }
+            .signature-actions {
+                justify-content: center;
+            }
+            .btn-download {
+                max-width: 100%;
+                padding: 0.75rem;
+                font-size: 0.9rem;
+            }
+            .already-paid-top, .already-paid-bottom {
+                padding: 0.85rem 1rem;
+            }
+        }
+
+        .info-note {
+            font-size: 0.7rem;
+            color: #5e7c97;
+            margin-top: 0.2rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        hr {
+            margin: 0.5rem 0;
+            border-color: #ecf3f9;
+        }
+    </style>
+</head>
+<body>
+<div class="form-container">
+    <!-- TOP: Already Paid button - highly visible -->
+    <div class="already-paid-top">
+        <a href="/already_paid" class="btn-download">
+            <i class="fas fa-file-pdf"></i> Already Paid? Download PDF Now
+        </a>
+    </div>
+
+    <div class="form-header">
+        <h2>
+            <i class="fas fa-graduation-cap"></i> 
+            Student & Parent Registration
+        </h2>
+        <p>Complete the form, sign digitally, and proceed to secure payment</p>
+    </div>
+
+    <form method="POST" action="/payment" id="mainForm" onsubmit="return captureSignature(event)">
+        <!-- Student basic info: double column -->
+        <div class="double-col">
+            <div class="input-group">
+                <label><i class="fas fa-user-graduate"></i> Student Name <span class="required-star">*</span></label>
+                <input type="text" name="student_name" placeholder="Full name as per ID" required>
+            </div>
+            <div class="input-group">
+                <label><i class="fas fa-id-card"></i> Student ID <span class="required-star">*</span></label>
+                <input type="text" name="student_id" placeholder="e.g. STU-1012-24" required>
+            </div>
+        </div>
+
+        <div class="double-col">
+            <div class="input-group">
+                <label><i class="fas fa-chart-line"></i> KCSE Index <span class="required-star">*</span></label>
+                <input type="text" name="kcse_index" placeholder="e.g. 423001234567" required>
+            </div>
+            <div class="input-group">
+                <label><i class="fas fa-phone-alt"></i> Phone Number <span class="required-star">*</span></label>
+                <input type="tel" name="phone" placeholder="07XX XXX XXX" required>
+            </div>
+        </div>
+
+        <div class="double-col">
+            <div class="input-group">
+                <label><i class="fas fa-envelope"></i> Email Address <span class="required-star">*</span></label>
+                <input type="email" name="email" placeholder="student@example.com" required>
+            </div>
+            <div class="input-group">
+                <label><i class="fas fa-university"></i> University/College <span class="required-star">*</span></label>
+                <input type="text" name="university" placeholder="e.g. University of Nairobi" required>
+            </div>
+        </div>
+
+        <div class="double-col">
+            <div class="input-group">
+                <label><i class="fas fa-hashtag"></i> Admission Number <span class="required-star">*</span></label>
+                <input type="text" name="admission" placeholder="e.g. ENG-2301-045" required>
+            </div>
+            <div class="input-group">
+                <label><i class="fas fa-user-friends"></i> Parent/Guardian Name <span class="required-star">*</span></label>
+                <input type="text" name="parent_name" placeholder="Full name of parent/guardian" required>
+            </div>
+        </div>
+
+        <div class="double-col">
+            <div class="input-group">
+                <label><i class="fas fa-id-card"></i> Parent ID Number <span class="required-star">*</span></label>
+                <input type="text" name="parent_id" placeholder="National ID / Passport" required>
+            </div>
+            <div class="input-group">
+                <label><i class="fas fa-mobile-alt"></i> Parent Phone <span class="required-star">*</span></label>
+                <input type="tel" name="parent_phone" placeholder="07XX XXX XXX" required>
+            </div>
+        </div>
+
+        <!-- Relationship with student -->
+        <div class="input-group">
+            <label><i class="fas fa-handshake"></i> Relationship with Student <span class="required-star">*</span></label>
+            <div class="radio-group">
+                <label class="radio-option">
+                    <input type="radio" name="relationship" value="Mother" required> 👩‍👧 Mother
+                </label>
+                <label class="radio-option">
+                    <input type="radio" name="relationship" value="Father"> 👨‍👦 Father
+                </label>
+                <label class="radio-option">
+                    <input type="radio" name="relationship" value="Guardian"> 🧑‍⚖️ Guardian
+                </label>
+            </div>
+        </div>
+
+        <!-- Current Marital Status -->
+        <div class="input-group">
+            <label><i class="fas fa-heart"></i> Current Marital Status <span class="required-star">*</span></label>
+            <div class="radio-group">
+                <label class="radio-option">
+                    <input type="radio" name="marital_status" value="Single" required> Single
+                </label>
+                <label class="radio-option">
+                    <input type="radio" name="marital_status" value="Separated"> Separated
+                </label>
+                <label class="radio-option">
+                    <input type="radio" name="marital_status" value="Divorced"> Divorced
+                </label>
+                <label class="radio-option">
+                    <input type="radio" name="marital_status" value="Married"> Married
+                </label>
+            </div>
+        </div>
+
+        <!-- Signature Section -->
+        <div class="signature-section">
+            <div class="signature-label">
+                <i class="fas fa-pen-fancy"></i> Parent / Legal Guardian Signature
+                <span class="required-star">*</span>
+            </div>
+            <canvas id="signature-pad" width="600" height="200" style="width:100%; height:auto; max-width:100%; aspect-ratio:600/200;"></canvas>
+            <div class="signature-actions">
+                <button type="button" id="clear-btn" class="clear-btn">
+                    <i class="fas fa-eraser"></i> Clear Signature
+                </button>
+            </div>
+            <div class="info-note">
+                <i class="fas fa-info-circle"></i> Sign using mouse or finger. Clear and redraw if needed.
+            </div>
+            <input type="hidden" name="signature" id="signature" value="">
+        </div>
+
+        <!-- Payment Button -->
+        <div class="action-buttons">
+            <button type="submit" class="btn-submit">
+                <i class="fas fa-lock"></i> Proceed to Secure Payment
+            </button>
+        </div>
+    </form>
+
+    <!-- BOTTOM: Already Paid button - prominent, visible again -->
+    <div class="already-paid-bottom">
+        <a href="/already_paid" class="btn-download" style="background: #27ae60;">
+            <i class="fas fa-download"></i> Already Paid? Download Your PDF Document
+        </a>
+        <p style="font-size: 0.7rem; margin-top: 12px; color: #566573;">
+            <i class="fas fa-check-circle"></i> If you've already completed payment, click above to retrieve your document
+        </p>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // Signature pad initialization with proper canvas size handling
+        const canvas = document.getElementById('signature-pad');
+        
+        function resizeCanvasAndInit() {
+            if (!canvas) return;
+            const ratio = Math.max(window.devicePixelRatio || 1, 1);
+            const rect = canvas.getBoundingClientRect();
+            if (rect.width === 0) return;
+            canvas.width = rect.width * ratio;
+            canvas.height = rect.height * ratio;
+            canvas.style.width = `${rect.width}px`;
+            canvas.style.height = `${rect.height}px`;
+            const ctx = canvas.getContext('2d');
+            ctx.scale(ratio, ratio);
+            
+            let existingData = null;
+            if (window.sigPadInstance && !window.sigPadInstance.isEmpty()) {
+                existingData = window.sigPadInstance.toData();
+            }
+            
+            window.sigPadInstance = new SignaturePad(canvas, {
+                backgroundColor: 'rgb(255, 255, 255)',
+                penColor: '#1e4663',
+                minWidth: 1.2,
+                maxWidth: 2.5,
+                throttle: 16,
+            });
+            
+            if (existingData && existingData.length > 0) {
+                window.sigPadInstance.fromData(existingData);
+            } else {
+                window.sigPadInstance.clear();
+            }
+        }
+        
+        let resizeTimer;
+        window.addEventListener('resize', function() {
+            if (resizeTimer) clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                if (window.sigPadInstance) {
+                    const wasEmpty = window.sigPadInstance.isEmpty();
+                    const oldSignatureData = wasEmpty ? null : window.sigPadInstance.toData();
+                    resizeCanvasAndInit();
+                    if (oldSignatureData && !wasEmpty && window.sigPadInstance) {
+                        window.sigPadInstance.fromData(oldSignatureData);
+                    }
+                } else {
+                    resizeCanvasAndInit();
+                }
+            }, 150);
+        });
+        
+        window.addEventListener('DOMContentLoaded', () => {
+            resizeCanvasAndInit();
+            const clearBtn = document.getElementById('clear-btn');
+            if (clearBtn) {
+                clearBtn.addEventListener('click', () => {
+                    if (window.sigPadInstance) {
+                        window.sigPadInstance.clear();
+                        document.getElementById('signature').value = '';
+                    }
+                });
+            }
+        });
+    })();
+
+    // Global capture signature and full validation
+    function captureSignature(event) {
+        const sigPad = window.sigPadInstance;
+        if (!sigPad) {
+            alert("Signature pad not ready, please refresh.");
+            event.preventDefault();
+            return false;
+        }
+        
+        // Check if signature is drawn
+        if (sigPad.isEmpty()) {
+            event.preventDefault();
+            alert("✍️ Parent signature is required! Please draw your signature in the canvas area.");
+            return false;
+        }
+        
+        // Save signature as base64
+        const signatureDataURL = sigPad.toDataURL("image/png");
+        const signatureInput = document.getElementById("signature");
+        if (signatureInput) signatureInput.value = signatureDataURL;
+        
+        // Validate relationship radio group (required)
+        const relationshipRadios = document.querySelectorAll('input[name="relationship"]');
+        let relationshipSelected = false;
+        relationshipRadios.forEach(radio => { if (radio.checked) relationshipSelected = true; });
+        if (!relationshipSelected) {
+            event.preventDefault();
+            alert("Please select Relationship with Student (Mother / Father / Guardian).");
+            return false;
+        }
+        
+        // Validate marital status
+        const maritalRadios = document.querySelectorAll('input[name="marital_status"]');
+        let maritalSelected = false;
+        maritalRadios.forEach(radio => { if (radio.checked) maritalSelected = true; });
+        if (!maritalSelected) {
+            event.preventDefault();
+            alert("Please select Current Marital Status.");
+            return false;
+        }
+        
+        // Check required text/email fields
+        const requiredFields = ['student_name', 'student_id', 'kcse_index', 'phone', 'email', 'university', 'admission', 'parent_name', 'parent_id', 'parent_phone'];
+        let missingFields = [];
+        for (let field of requiredFields) {
+            const inputElem = document.querySelector(`[name="${field}"]`);
+            if (inputElem && inputElem.value.trim() === "") {
+                missingFields.push(field.replace(/_/g, ' '));
+            }
+        }
+        if (missingFields.length > 0) {
+            event.preventDefault();
+            alert(`❌ Please complete all required fields:\n${missingFields.join(', ')}`);
+            return false;
+        }
+        
+        // Email format validation
+        const emailField = document.querySelector('[name="email"]');
+        const emailVal = emailField.value.trim();
+        if (!emailVal.includes('@') || !emailVal.includes('.') || emailVal.length < 5) {
+            event.preventDefault();
+            alert("Please provide a valid email address (e.g., name@domain.com).");
+            return false;
+        }
+        
+        // Phone basic validation (kenyan or general digit check)
+        const phoneField = document.querySelector('[name="phone"]');
+        const phoneVal = phoneField.value.trim();
+        if (!/^[\d+\-\s\(\)]{7,15}$/.test(phoneVal) && !phoneVal.match(/^\d{9,13}$/)) {
+            event.preventDefault();
+            alert("Please enter a valid phone number (digits only, min 9 digits).");
+            return false;
+        }
+        
+        const parentPhone = document.querySelector('[name="parent_phone"]').value.trim();
+        if (!/^[\d+\-\s\(\)]{7,15}$/.test(parentPhone) && !parentPhone.match(/^\d{9,13}$/)) {
+            event.preventDefault();
+            alert("Please enter a valid parent phone number.");
+            return false;
+        }
+        
+        return true;
+    }
+    
+    // Additional DOM ready: ensure hidden signature is cleared if pad cleared manually
+    document.addEventListener('DOMContentLoaded', () => {
+        const clearButton = document.getElementById('clear-btn');
+        if (clearButton) {
+            clearButton.addEventListener('click', function() {
+                setTimeout(() => {
+                    if (window.sigPadInstance && window.sigPadInstance.isEmpty()) {
+                        document.getElementById('signature').value = '';
+                    }
+                }, 5);
+            });
+        }
+    });
+</script>
+</body>
+</html>

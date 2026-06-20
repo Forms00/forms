@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Payment Page</title>
+    <script src="https://js.paystack.co/v1/inline.js"></script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f4f6f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background: #fff;
+            padding: 30px 40px;
+            border-radius: 12px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 400px;
+        }
+        h2 {
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+        .btn {
+            background: #27ae60;
+            color: #fff;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 15px;
+            cursor: pointer;
+            width: 100%;
+        }
+        .btn:hover {
+            background: #219150;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Complete Your Payment</h2>
+        <button class="btn" onclick="payWithPaystack()">Pay Now</button>
+    </div>
+
+    <script>
+        function payWithPaystack() {
+            var handler = PaystackPop.setup({
+                key: "pk_live_9555fafdeed2f65cfa8adfe1e9cf258e3cd5846a",  // passed from Flask
+                email: "{{ data['email'] }}",
+                amount: 100, // Amount in kobo (50000 = 500 NGN, adjust as needed)
+                currency: "KES", // use your preferred currency
+                callback: function(response) {
+                    // Redirect to verify route with payment reference
+                    window.location.href = "/verify_payment?reference=" + response.reference;
+                },
+                onClose: function() {
+                    alert("Payment window closed.");
+                }
+            });
+            handler.openIframe();
+        }
+    </script>
+</body>
+</html>

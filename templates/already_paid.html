@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Already Paid? | Download PDF</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(145deg, #eef2f9 0%, #e2e9f2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 1rem;
+        }
+
+        .container {
+            background: #ffffff;
+            padding: 2rem 1.5rem;
+            border-radius: 2rem;
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.2), 0 1px 3px rgba(0,0,0,0.05);
+            max-width: 480px;
+            width: 100%;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        /* better spacing on phones */
+        @media (max-width: 480px) {
+            .container {
+                padding: 1.8rem 1.2rem;
+                border-radius: 1.5rem;
+            }
+        }
+
+        h2 {
+            font-size: 1.9rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #1e3c72, #2a4e7a);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.3px;
+        }
+
+        @media (max-width: 480px) {
+            h2 {
+                font-size: 1.6rem;
+            }
+        }
+
+        .description {
+            margin-bottom: 1.8rem;
+            color: #5a6e84;
+            font-size: 0.9rem;
+            font-weight: 400;
+            border-bottom: 1px solid #ecf3f9;
+            padding-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .description i {
+            color: #2ecc71;
+            font-size: 0.85rem;
+        }
+
+        /* error styling - mobile friendly */
+        .error {
+            background: #fff5f5;
+            color: #c53030;
+            padding: 0.9rem 1rem;
+            border-radius: 1.2rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #fed7d7;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-align: left;
+            word-break: break-word;
+        }
+
+        .error i {
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        /* form label */
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #1e2f41;
+            text-align: left;
+            font-size: 0.85rem;
+            letter-spacing: -0.2px;
+        }
+
+        label i {
+            color: #2c7da0;
+            margin-right: 6px;
+        }
+
+        /* email input - touch friendly */
+        input[type="email"] {
+            width: 100%;
+            padding: 0.9rem 1rem;
+            margin-bottom: 1.5rem;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 1.2rem;
+            font-size: 1rem;
+            font-family: 'Inter', monospace;
+            transition: all 0.2s;
+            background-color: #fefefe;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        input[type="email"]:focus {
+            outline: none;
+            border-color: #2ecc71;
+            box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.15);
+        }
+
+        /* button - large tap target */
+        .btn {
+            background: linear-gradient(105deg, #2ecc71, #27ae60);
+            color: #fff;
+            border: none;
+            padding: 0.9rem 1.5rem;
+            border-radius: 3rem;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            box-shadow: 0 6px 14px rgba(46, 204, 113, 0.3);
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .btn i {
+            font-size: 1.1rem;
+        }
+
+        .btn:active {
+            transform: scale(0.97);
+        }
+
+        @media (hover: hover) {
+            .btn:hover {
+                background: linear-gradient(105deg, #27ae60, #219653);
+                transform: translateY(-2px);
+                box-shadow: 0 12px 22px rgba(39, 174, 96, 0.28);
+            }
+        }
+
+        /* back link - improved tap area */
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 1.8rem;
+            color: #5d7b9a;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            padding: 0.6rem 1rem;
+            border-radius: 2.5rem;
+            background: #f8fafd;
+            width: auto;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .back-link i {
+            font-size: 0.75rem;
+        }
+
+        @media (hover: hover) {
+            .back-link:hover {
+                color: #2c7da0;
+                background: #edf2f7;
+            }
+        }
+
+        .back-link:active {
+            transform: scale(0.96);
+        }
+
+        /* extra helper text for mobile */
+        .helper-note {
+            margin-top: 1rem;
+            font-size: 0.7rem;
+            color: #7c8ea0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        /* safe area adjustments for modern phones */
+        @supports (padding: max(0px)) {
+            body {
+                padding: max(1rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right)) max(1rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Already Paid?</h2>
+        <div class="description">
+            <i class="fas fa-file-pdf"></i> 
+            <span>Enter your email to download your document</span>
+        </div>
+        
+        {% if error %}
+        <div class="error">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>{{ error }}</span>
+        </div>
+        {% endif %}
+        
+        <form method="POST">
+            <label for="email">
+                <i class="fas fa-envelope"></i> Email Address:
+            </label>
+            <input type="email" name="email" id="email" required 
+                   placeholder="student@example.com" 
+                   inputmode="email" autocomplete="email">
+            
+            <button type="submit" class="btn">
+                <i class="fas fa-download"></i> Download PDF
+            </button>
+        </form>
+        
+        <a href="{{ url_for('index') }}" class="back-link">
+            <i class="fas fa-arrow-left"></i> Back to Application Form
+        </a>
+        
+        <div class="helper-note">
+            <i class="fas fa-lock"></i> Secure download • Use the email from your payment
+        </div>
+    </div>
+</body>
+</html>
