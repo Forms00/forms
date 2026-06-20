@@ -20,7 +20,7 @@ app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
 
 # MongoDB connection
-mmongo_uri = os.getenv("MONGO_URI")
+mongo_uri = os.getenv("MONGO_URI")
 
 print("MONGO URI:", mongo_uri)
 
