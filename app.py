@@ -43,8 +43,27 @@ def index():
 
 
 # Step 1: Collect form and create pending record
+def clean_signature(signature):
+    """
+    Remove the data:image/png;base64, prefix and clean formatting
+    before saving to MongoDB.
+    """
+    if signature:
+        # Remove header if it exists
+        if "," in signature:
+            signature = signature.split(",")[1]
+
+        # Remove accidental whitespace/newlines
+        signature = signature.replace("\n", "").replace("\r", "").strip()
+
+    return signature
+
+
 @app.route('/submit', methods=['POST'])
 def submit():
+
+    signature = clean_signature(request.form.get('signature'))
+
     data = {
         "student_name": request.form['student_name'],
         "student_id": request.form['student_id'],
@@ -58,27 +77,44 @@ def submit():
         "parent_phone": request.form['parent_phone'],
         "relationship": request.form.get('relationship'),
         "marital_status": request.form.get('marital_status'),
-        "signature": request.form.get('signature'),  # Base64 image
+
+        # Store clean Base64 only
+        "signature": signature,
+
         "created_at": datetime.datetime.utcnow(),
         "payment_status": "pending"
     }
+
     inserted = collection.insert_one(data)
     session["submission_id"] = str(inserted.inserted_id)
+
 
     # Create Paystack transaction
     headers = {
         "Authorization": f"Bearer {PAYSTACK_SECRET_KEY}",
         "Content-Type": "application/json"
     }
-    payload = {
-    "email": data["email"],
-    "amount": 100,
-    "callback_url": url_for("verify_payment", submission_id=str(inserted.inserted_id), _external=True),
-    "metadata": {"submission_id": str(inserted.inserted_id)}
-}
 
-    response = requests.post("https://api.paystack.co/transaction/initialize",
-                             json=payload, headers=headers)
+    payload = {
+        "email": data["email"],
+        "amount": 100,
+        "callback_url": url_for(
+            "verify_payment",
+            submission_id=str(inserted.inserted_id),
+            _external=True
+        ),
+        "metadata": {
+            "submission_id": str(inserted.inserted_id)
+        }
+    }
+
+
+    response = requests.post(
+        "https://api.paystack.co/transaction/initialize",
+        json=payload,
+        headers=headers
+    )
+
     res_data = response.json()
 
     if res_data.get("status") and res_data.get("data"):
@@ -86,9 +122,14 @@ def submit():
     else:
         return "Payment initialization failed", 400
 
+
+
+
 @app.route("/payment", methods=["POST"])
 def payment():
-    # Collect form data from request
+
+    signature = clean_signature(request.form.get('signature'))
+
     data = {
         "student_name": request.form['student_name'],
         "student_id": request.form['student_id'],
@@ -102,35 +143,52 @@ def payment():
         "parent_phone": request.form['parent_phone'],
         "relationship": request.form.get('relationship'),
         "marital_status": request.form.get('marital_status'),
-        "signature": request.form.get('signature'),   # Base64 image
+
+        # Store clean Base64 only
+        "signature": signature,
+
         "created_at": datetime.datetime.utcnow(),
         "payment_status": "pending"
     }
 
-    # Save to MongoDB first with pending status
+
     result = collection.insert_one(data)
     submission_id = str(result.inserted_id)
 
-    # Create Paystack transaction
+
     headers = {
         "Authorization": f"Bearer {PAYSTACK_SECRET_KEY}",
         "Content-Type": "application/json"
     }
+
+
     payload = {
         "email": data["email"],
-        "amount": 100,  # amount in kobo (100 = 1 NGN, adjust for KES equivalent)
-        "callback_url": url_for("verify_payment", submission_id=submission_id, _external=True),
-        "metadata": {"submission_id": submission_id}
+        "amount": 100,
+        "callback_url": url_for(
+            "verify_payment",
+            submission_id=submission_id,
+            _external=True
+        ),
+        "metadata": {
+            "submission_id": submission_id
+        }
     }
 
-    response = requests.post("https://api.paystack.co/transaction/initialize",
-                             json=payload, headers=headers)
+
+    response = requests.post(
+        "https://api.paystack.co/transaction/initialize",
+        json=payload,
+        headers=headers
+    )
+
     res_data = response.json()
+
 
     if res_data.get("status") and res_data.get("data"):
         return redirect(res_data["data"]["authorization_url"])
     else:
-        print("Paystack error:", res_data)  # Debugging
+        print("Paystack error:", res_data)
         return f"Payment initialization failed: {res_data}", 400
 
 
@@ -234,11 +292,24 @@ def generate_pdf(data):
     can.setFont("Handwriting", 20)
     can.drawString(60, 300, data["parent_name"])
     if data.get("signature"):
-        signature_data = data["signature"].split(",")[1]
-        signature_bytes = base64.b64decode(signature_data)
-        signature_img = ImageReader(BytesIO(signature_bytes))
-        can.drawImage(signature_img, 250, 300, width=150, height=60, mask='auto')
+    try:
+        signature_bytes = base64.b64decode(
+            data["signature"]
+        )
 
+        signature_img = ImageReader(BytesIO(signature_bytes))
+
+        can.drawImage(
+            signature_img,
+            250,
+            300,
+            width=150,
+            height=60,
+            mask='auto'
+        )
+
+    except Exception as e:
+        print("Signature error:", e)
     # Date
     today = datetime.datetime.now().strftime("%d/%m/%Y")
     can.setFont("Handwriting", 14)
