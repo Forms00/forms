@@ -312,8 +312,43 @@ def generate_pdf(data):
     can.setFont("Handwriting", 14)
     can.drawString(440, 300, today)
 
+    # Date
+    today = datetime.datetime.now().strftime("%d/%m/%Y")
+    can.setFont("Handwriting", 14)
+    can.drawString(370, 130, today)
+
+    from PIL import Image
+    from reportlab.lib.utils import ImageReader
+
+    img = Image.open("signature.png").convert("L")
+
+    threshold = 180
+
+    rgba = Image.new("RGBA", img.size)
+
+    for y in range(img.height):
+        for x in range(img.width):
+            p = img.getpixel((x, y))
+
+            if p > threshold:
+                # Background -> transparent
+                rgba.putpixel((x, y), (255, 255, 255, 0))
+            else:
+                # Signature -> black
+                rgba.putpixel((x, y), (0, 0, 0, 255))
+
+    can.drawImage(
+        ImageReader(rgba),
+        370,
+        135,
+        width=120,
+        height=50,
+        mask="auto"
+    )
+
     can.save()
     packet.seek(0)
+    
 
     # Merge with blank form
     template_path = "static/blank_form.pdf"
