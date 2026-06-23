@@ -4,3 +4,6 @@ reportlab
 PyPDF2
 requests
 python-dotenv
+svglib
+pillow
+requests
