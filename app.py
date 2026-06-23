@@ -75,7 +75,7 @@ def payment():
     }
     payload = {
         "email": data["email"],
-        "amount": 100,
+        "amount": 30000,
         "callback_url": url_for("verify_payment", submission_id=submission_id, _external=True),
         "metadata": {"submission_id": submission_id}
     }
